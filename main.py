@@ -8,6 +8,7 @@ import create_groups as cg
 import send_emails as se
 import clean_data as cd
 
+#TODO: need to include sample parameters in README file
 def _extract_program_args():
     global args
     parser = argparse.ArgumentParser(description='Handy helper function for matching alumni and students together for '
