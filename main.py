@@ -1,8 +1,4 @@
-import smtplib
 import argparse
-import datetime as dt
-import pickle
-import random
 
 import create_groups as cg
 import send_emails as se

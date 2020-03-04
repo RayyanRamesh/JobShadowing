@@ -4,7 +4,6 @@ Laure Halabi
 '''
 import xlrd
 import xlwt
-# This class defines the student object. When students are read from a spreadsheet file this is how they are stored
 class Student:
     '''
     This class defines the student object. When students are read from a spreadsheet file this is how they are stored
@@ -12,7 +11,7 @@ class Student:
     def __init__(self, name, email, telephone, year, discipline, option, city, avail_dates, transportation, career_fields, same_disp_flag, alum_contact_flag, benefit_long_ans, learn_long_ans, email_long_ans):
         self.name = name
         self.email = email
-        self.telephone = str(telephone) # Converts the telephone number to a string
+        self.telephone = str(telephone)  # Converts the telephone number to a string
         self.year = year
         self.discipline = discipline
         self.option = option

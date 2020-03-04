@@ -1,6 +1,4 @@
 import smtplib
-import pickle
-import random
 import xlrd
 
 # from ical_invite import create_ical_file
@@ -28,8 +26,12 @@ STYLE = """<html><head><style TYPE="text/css">
            </head><body>"""
 
 
-
 class Match:
+    '''
+    Each match between an alum and student(s) is saved into an Match object.
+    This Class contains a string for email recipient and the email body.
+    '''
+
     def __init__(self, alum_name, alum_email, alum_discipline, alum_job, alum_company, alum_careers, alum_adress, alum_job_description, alum_benefit_long_ans,
                  student1_name, student1_email, student1_year, student1_discipline, student1_option, student1_careers, student1_long_ans,
                  student2_name, student2_email, student2_year, student2_discipline, student2_option, student2_careers, student2_long_ans, avail_date):
@@ -60,13 +62,15 @@ class Match:
             return self.alum_email + ', ' + self.student1_email
         return self.alum_email + ', ' + self.student1_email + ', ' + self.student2_email
 
+    #TODO: Change the email signature for future emails
     def email_body(self):
-
+        # Alum matched with one student
         if self.student2_name == 'N/A':
             message = 'Hi {Alum_Name} and {Student1_Name},  \n \n' \
                        'Thank you both for signing up for the Alumni Relations Committee’s Job Shadowing program! ' \
                       'We have matched the two of you together.  \n\n'.format(Alum_Name=self.alum_name.split(' ')[0],
-                                                                          Student1_Name=self.student1_name.split(' ')[0])
+                                                                        Student1_Name=self.student1_name.split(' ')[0])
+            # Change message if the student is a First Year
             if self.student1_year =='First Year':
                 message += '{Student1_Name} is a {Student1_Year} student. '.format(
                                                                           Student1_Name=self.student1_name,
@@ -97,26 +101,29 @@ class Match:
                                                                           Alum_title=self.alum_job,
                                                                           Avail_date=self.avail_date,
                                                                           Student1_Long_Ans=self.student1_long_ans)
-        else:
+        else
+            # Alum is matched with two students
             message = 'Hi {Alum_Name}, {Student1_Name}, and {Student2_Name}, \n\n' \
                       'Thank you all for signing up for the Alumni Relations ' \
                       'Committee’s Job Shadowing program! We have matched the three of you together. \n\n'.format(Alum_Name=self.alum_name.split(' ')[0],
                                                                           Student1_Name=self.student1_name.split(' ')[0], Student2_Name=self.student2_name.split(' ')[0])
+            # Change message if the student is a First Year
             if self.student1_year == 'First Year':
                 message += '{Student1_Name} is a {Student1_Year} student. '.format(
                     Student1_Name=self.student1_name,
                     Student1_Year=self.student1_year)
             else:
-                message += '{Student1_Name} is a {Student1_Year} in {Student1_Discipline} student. '.format(
+                message += '{Student1_Name} is a {Student1_Year} in {Student1_Discipline}. '.format(
                     Student1_Name=self.student1_name,
                     Student1_Year=self.student1_year,
                     Student1_Discipline=self.student1_discipline)
+            # Change message if the student is a First Year
             if self.student2_year == 'First Year':
                 message += '{Student2_Name} is a {Student2_Year} student. '.format(
                     Student2_Name=self.student2_name,
                     Student2_Year=self.student2_year)
             else:
-                message += '{Student2_Name} is a {Student2_Year} in {Student2_Discipline} student. '.format(
+                message += '{Student2_Name} is a {Student2_Year} in {Student2_Discipline}. '.format(
                     Student2_Name=self.student2_name,
                     Student2_Year=self.student2_year,
                     Student2_Discipline=self.student2_discipline)
@@ -139,7 +146,6 @@ class Match:
         return message
 
 def _read_matches(matches_file_path):
-
     # To open Workbook
     wb = xlrd.open_workbook(matches_file_path)
     sheet = wb.sheet_by_index(0)
@@ -178,7 +184,6 @@ def _read_matches(matches_file_path):
             sheet.cell_value(i, 25),  # student 2 long ans
 
             sheet.cell_value(i, 26)   # avail dates
-
         )
         match_list.append(curr)
 
@@ -186,15 +191,14 @@ def _read_matches(matches_file_path):
 
 
 class Emailer():
+    #TODO: Change stmp information for current person emailing
     def __init__(self):
         self.smtp = smtplib.SMTP(host='smtp.gmail.com', port=587)
         myGmail = 'laure.halabi@gmail.com'
         myGMPasswd ='    '
         self.smtp.starttls()
         self.smtp.login(myGmail, myGMPasswd)
-
     def send_email(self, email_from, email_to, email_cc, subject, html_body, include_style=False, send_invite=False):
-
         print("email_to is: {}".format(email_to))
         msg = MIMEMultipart()
         msg['Subject'] = subject
@@ -213,13 +217,14 @@ class Emailer():
     def __del__(self):
         self.smtp.quit()
 
+# Function called by main to email out all the matches
 def _email_matches(file_path):
-
     match_list = _read_matches(file_path)
     email_subject = 'Job Shadowing Match'
     _send_email_to_groups(email_subject, match_list)
 
-
+# Function to save all outgoing emails to a text file
+#TODO: create a text file for the rejected participants
 def _save_emails_to_file(file_path):
     match_list = _read_matches(file_path)
     f = open('job_shadowing_emails.txt', 'w+')
@@ -228,19 +233,21 @@ def _save_emails_to_file(file_path):
         f.write('Email to: {} \n'.format(match.email_to()))
         f.write('Email body: \n{}\n\n\n'.format(match.email_body()))
 
+# Function to send out emails to all the matches
 def _send_email_to_groups(email_subject, matches):
     organizer = 'laure.halabi@gmail.com'
     email_subj = email_subject
 
-    # for match in matches:
-    #     email_message = match.email_body()
-    #     Emailer().send_email(email_from=organizer, email_to=match.email_to(), email_cc=organizer, subject=email_subj,
-    #                   html_body=email_message)
+    for match in matches:
+        email_message = match.email_body()
+        Emailer().send_email(email_from=organizer, email_to=match.email_to(), email_cc=organizer, subject=email_subj,
+                             html_body=email_message)
 
-    match = matches[0]
-    email_message = match.email_body()
-    Emailer().send_email(email_from=organizer, email_to=match.email_to(), email_cc=organizer, subject=email_subj,
-                      html_body=email_message)
+    # testing for a singular match 
+    # match = matches[0]
+    # email_message = match.email_body()
+    # Emailer().send_email(email_from=organizer, email_to=match.email_to(), email_cc=organizer, subject=email_subj,
+    #                   html_body=email_message)
 
 
 
