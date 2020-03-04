@@ -1,12 +1,18 @@
-
+'''
+Clean data
+Laure Halabi
+'''
 import xlrd
 import xlwt
-
+# This class defines the student object. When students are read from a spreadsheet file this is how they are stored
 class Student:
+    '''
+    This class defines the student object. When students are read from a spreadsheet file this is how they are stored
+    '''
     def __init__(self, name, email, telephone, year, discipline, option, city, avail_dates, transportation, career_fields, same_disp_flag, alum_contact_flag, benefit_long_ans, learn_long_ans, email_long_ans):
         self.name = name
         self.email = email
-        self.telephone = str(telephone)
+        self.telephone = str(telephone) # Converts the telephone number to a string
         self.year = year
         self.discipline = discipline
         self.option = option
@@ -29,6 +35,7 @@ class Student:
         self.learn_long_ans = learn_long_ans
         self.email_long_ans = email_long_ans
 
+    # This is how a student object would be printed
     def profile(self):
         profile = "=====================================================================================================\n"\
                   + "=====================================================================================================\n" \
@@ -51,7 +58,7 @@ class Student:
 
         return profile
 
-
+    # This class defines the alumni object. All the data is read from a spreadsheet file
 class Alumni:
     def __init__(self, name, email, telephone, discipline, job_title, tasks, company, career_fields, city, avail_dates, student_limit, same_disp_flag, benefit_long_ans):
         self.name = name
@@ -76,6 +83,7 @@ class Alumni:
         self.same_disp_flag = same_disp_flag
         self.benefit_long_ans = benefit_long_ans
 
+        # This is how an alumni object would be printed
     def profile(self):
         profile = "=====================================================================================================\n"\
                   + "=====================================================================================================\n" \
@@ -98,7 +106,7 @@ class Alumni:
 
 def _read_data(student_file_path, alumni_file_path, matches_file_path):         #, day1, day2):
 
-    # To open Workbook
+    # To open Workbook in excel
     wb = xlrd.open_workbook(student_file_path)
     sheet = wb.sheet_by_index(0)
 
@@ -163,39 +171,19 @@ def _read_data(student_file_path, alumni_file_path, matches_file_path):         
 
     return student_list, alumni_list, good_matches, bad_matches
 
-
+    # Stores all data on matched students and alumni and unmatched students and alumni in a spreadsheet
 def _save_data(matches, rejected_alumni, rejected_students):
 
+    spread_sheet_titles = ['Match #', 'Alum Name', 'Alum Email', 'Alum Discipline', 'Alum Job Title', 'Alum Company', 'Alum Career Fields', 'Alum Work Address', 'Alum Job Description',
+                           'Alum Student Benefit Description', 'Student 1 Name', 'Student 1 Email', 'Student 1 City', 'Student 1 Year', 'Student 1 Discipline', 'Student 1 Option',
+                           'Student 1 Career Fields of Interest', 'Student 1 Long Ans', 'Student 2 Name', 'Student 2 Email', 'Student 2 City', 'Student 2 Year', 'Student 2 Discipline',
+                           'Student 2 Option', 'Student 2 Career Fields of Interest', 'Student 2 Long Ans', 'Matching Details']
     workbook = xlwt.Workbook(encoding='ascii')
     worksheet = workbook.add_sheet('Matches')
+    count = 0
 
-    worksheet.write(0, 0, 'Match #')
-    worksheet.write(0, 1, 'Alum Name')
-    worksheet.write(0, 2, 'Alum Email')
-    worksheet.write(0, 3, 'Alum Discipline')
-    worksheet.write(0, 4, 'Alum Job Title')
-    worksheet.write(0, 5, 'Alum Company')
-    worksheet.write(0, 6, 'Alum Career Fields')
-    worksheet.write(0, 7, 'Alum Work Address')
-    worksheet.write(0, 8, 'Alum Job Description')
-    worksheet.write(0, 9, 'Alum Student Benefit Description')
-    worksheet.write(0, 10, 'Student 1 Name')
-    worksheet.write(0, 11, 'Student 1 Email')
-    worksheet.write(0, 12, 'Student 1 City')
-    worksheet.write(0, 13, 'Student 1 Year')
-    worksheet.write(0, 14, 'Student 1 Discipline')
-    worksheet.write(0, 15, 'Student 1 Option')
-    worksheet.write(0, 16, 'Student 1 Career Fields of Interest')
-    worksheet.write(0, 17, 'Student 1 Long Ans')
-    worksheet.write(0, 18, 'Student 2 Name')
-    worksheet.write(0, 19, 'Student 2 Email')
-    worksheet.write(0, 20, 'Student 2 City')
-    worksheet.write(0, 21, 'Student 2 Year')
-    worksheet.write(0, 22, 'Student 2 Discipline')
-    worksheet.write(0, 23, 'Student 2 Option')
-    worksheet.write(0, 25, 'Student 2 Career Fields of Interest')
-    worksheet.write(0, 26, 'Student 2 Long Ans')
-    worksheet.write(0, 27, 'Matching Details')
+    for i in range(len(spread_sheet_titles)):
+        worksheet.write(0, count, spread_sheet_titles[i])
 
     for row in range(len(matches)):
         worksheet.write(row+1, 0, row)

@@ -1,3 +1,10 @@
+'''
+**Create Groups
+**Laure Halabi
+'''
+
+# This class matches students with alumni
+
 import random
 GROUP_SIZE = 4
 
@@ -11,7 +18,6 @@ CAREER_WEIGHT = 2
 MATCH_SCORE_THRESHOLD = 2
 
 import copy
-
 
 def _create_matches(alumni_list, student_list, good_matches_orginal, bad_matches):
     '''
@@ -32,13 +38,14 @@ def _create_matches(alumni_list, student_list, good_matches_orginal, bad_matches
         match_score_sum = 0
         curr_matches = []
 
+        # Makes a copy of the lists of alumni, students, good matches and bad matches
         alumni = copy.deepcopy(alumni_list)
         students = copy.deepcopy(student_list)
         good_matches = copy.deepcopy(good_matches_orginal)
 
         random.shuffle(alumni)
         random.shuffle(students)
-
+        # This array goes through the list of alumni and students and matches them based on the good and bad matches
         for alum in alumni:
             limit = alum.student_limit
             for student in students:
@@ -48,7 +55,7 @@ def _create_matches(alumni_list, student_list, good_matches_orginal, bad_matches
                         del good_matches[alum.name]
                     elif student.name in good_matches.values():  # dont let a student get matched elsewhere if they're a good match with an another alum
                         break
-
+                        # When a match is found, the alumni's limit for number of students goes down by one
                     limit -= 1
 
                     if limit > 0:
@@ -75,7 +82,7 @@ def _create_matches(alumni_list, student_list, good_matches_orginal, bad_matches
                 curr_matches.append([alum, hold_student])
                 alumni.remove(alum)
                 double_flag = False
-
+        # each alumni and student match is based on a score. The higher the score the better matched the student and alumni are
         print("Average match score: {}".format(match_score_sum/len(curr_matches)))
         print("Number of Matches: {}".format(len(curr_matches)))
 
@@ -84,9 +91,9 @@ def _create_matches(alumni_list, student_list, good_matches_orginal, bad_matches
             rejected_students = copy.deepcopy(students)
             rejected_alumni = copy.deepcopy(alumni)
 
-    return best_matches, rejected_alumni, rejected_students
+    return best_matches, rejected_alumni, rejected_students     # Sends back the best matches, and alumni and students that didn't match well
 
-
+# This function determines if a alumni and student are good matches based on their discipline, city, and available dates
 def _valid_match(alum, student, bad_matches):
     # check that they haven't been considered a bad match
     if alum.name in bad_matches and student.name in bad_matches[alum.name]:
